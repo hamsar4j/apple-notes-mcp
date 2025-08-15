@@ -1,5 +1,7 @@
 # Apple Notes MCP Server
 
+![MCP Apple Notes](./assets/logo.png)
+
 A Model Context Protocol (MCP) server that provides CRU(D) tools for Apple Notes using AppleScript integration. This server allows you to create, read, and update notes and folders in the Apple Notes app on your MacOS devices.
 
 ## Features
