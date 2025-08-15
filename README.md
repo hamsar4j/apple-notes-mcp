@@ -1,10 +1,10 @@
 # Apple Notes MCP Server
 
-A Model Context Protocol (MCP) server that provides CRU(D) operations for Apple Notes using AppleScript integration. This server allows you to create, read, and update notes and folders in the Apple Notes app on your MacOS devices.
+A Model Context Protocol (MCP) server that provides CRU(D) tools for Apple Notes using AppleScript integration. This server allows you to create, read, and update notes and folders in the Apple Notes app on your MacOS devices.
 
 ## Features
 
-### Note Operations
+### Note Tools
 
 - **Create notes** - Add new notes with title and content
 - **List notes** - Get all notes or notes in a specific folder
@@ -13,7 +13,7 @@ A Model Context Protocol (MCP) server that provides CRU(D) operations for Apple 
 - **Update note title** - Rename existing notes
 - **Search notes** - Find notes by content or title
 
-### Folder Operations
+### Folder Tools
 
 - **Create folders** - Add new folders to organize notes
 - **List folders** - Get all available folders
@@ -69,7 +69,7 @@ To use this server with an MCP client (like Claude Desktop), add the following t
       "command": "uv",
       "args": [
         "--directory",
-        "apple-notes-mcp",
+        "apple-notes-mcp/src/apple-notes-mcp",
         "run",
         "server.py"
       ]

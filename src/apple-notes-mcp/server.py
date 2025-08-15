@@ -1,13 +1,13 @@
 import logging
 from mcp.server.fastmcp import FastMCP
-from notes_operations import AppleNotesOperations
+from notes_client import NotesClient
 from typing import Optional
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 mcp = FastMCP("apple-notes")
-notes_ops = AppleNotesOperations()
+notes_ops = NotesClient()
 
 
 @mcp.tool()

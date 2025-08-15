@@ -6,7 +6,7 @@ from models import Note, Folder, AppleScriptResult
 logger = logging.getLogger(__name__)
 
 
-class AppleNotesOperations:
+class NotesClient:
     def __init__(self, timeout: int = 30):
         self.wrapper = AppleScriptWrapper(timeout=timeout)
 
