@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 mcp = FastMCP("apple-notes")
-notes_ops = NotesClient()
+notes_client = NotesClient()
 
 
 @mcp.tool()
@@ -24,7 +24,7 @@ def create_note(title: str, content: str, folder: Optional[str] = None) -> str:
         Success message or error description
     """
     try:
-        result = notes_ops.create_note(title, content, folder)
+        result = notes_client.create_note(title, content, folder)
         if result.success:
             return f"Note '{title}' created successfully"
         else:
@@ -46,7 +46,7 @@ def list_notes(folder: Optional[str] = None) -> str:
         List of note names or error message
     """
     try:
-        notes = notes_ops.list_notes(folder)
+        notes = notes_client.list_notes(folder)
         if notes:
             notes_list = "\n".join(f"• {note}" for note in notes)
             folder_text = f" in folder '{folder}'" if folder else ""
@@ -71,7 +71,7 @@ def get_note_content(note_name: str) -> str:
         Note content or error message
     """
     try:
-        note = notes_ops.get_note_content(note_name)
+        note = notes_client.get_note_content(note_name)
         if note:
             folder_info = f" (in folder: {note.folder})" if note.folder else ""
             return f"Note: {note.name}{folder_info}\n\n{note.body}"
@@ -95,7 +95,7 @@ def update_note_content(note_name: str, new_content: str) -> str:
         Success message or error description
     """
     try:
-        result = notes_ops.update_note_content(note_name, new_content)
+        result = notes_client.update_note_content(note_name, new_content)
         if result.success:
             return f"Note '{note_name}' content updated successfully"
         else:
@@ -118,7 +118,7 @@ def update_note_title(old_name: str, new_name: str) -> str:
         Success message or error description
     """
     try:
-        result = notes_ops.update_note_title(old_name, new_name)
+        result = notes_client.update_note_title(old_name, new_name)
         if result.success:
             return f"Note title updated from '{old_name}' to '{new_name}'"
         else:
@@ -140,7 +140,7 @@ def create_folder(folder_name: str) -> str:
         Success message or error description
     """
     try:
-        result = notes_ops.create_folder(folder_name)
+        result = notes_client.create_folder(folder_name)
         if result.success:
             return f"Folder '{folder_name}' created successfully"
         else:
@@ -159,7 +159,7 @@ def list_folders() -> str:
         List of folder names or error message
     """
     try:
-        folders = notes_ops.list_folders()
+        folders = notes_client.list_folders()
         if folders:
             folders_list = "\n".join(f"{folder}" for folder in folders)
             return f"Folders in Apple Notes:\n{folders_list}"
@@ -183,7 +183,7 @@ def move_note_to_folder(note_name: str, folder_name: str) -> str:
         Success message or error description
     """
     try:
-        result = notes_ops.move_note_to_folder(note_name, folder_name)
+        result = notes_client.move_note_to_folder(note_name, folder_name)
         if result.success:
             return f"Note '{note_name}' moved to folder '{folder_name}'"
         else:
@@ -205,7 +205,7 @@ def search_notes(search_term: str) -> str:
         List of matching note names or error message
     """
     try:
-        matching_notes = notes_ops.search_notes(search_term)
+        matching_notes = notes_client.search_notes(search_term)
         if matching_notes:
             notes_list = "\n".join(f"{note}" for note in matching_notes)
             return f"Notes containing '{search_term}':\n{notes_list}"
@@ -228,7 +228,7 @@ def get_folder_info(folder_name: str) -> str:
         Folder information or error message
     """
     try:
-        folder_info = notes_ops.get_folder_info(folder_name)
+        folder_info = notes_client.get_folder_info(folder_name)
         if folder_info:
             note_count = (
                 folder_info.note_count
