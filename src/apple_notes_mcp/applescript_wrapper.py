@@ -1,6 +1,6 @@
 import subprocess
 import logging
-from models import AppleScriptResult
+from .models import AppleScriptResult
 
 logger = logging.getLogger(__name__)
 

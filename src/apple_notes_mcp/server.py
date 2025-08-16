@@ -1,6 +1,6 @@
 import logging
 from mcp.server.fastmcp import FastMCP
-from notes_client import NotesClient
+from .notes_client import NotesClient
 from typing import Optional
 
 logging.basicConfig(level=logging.INFO)

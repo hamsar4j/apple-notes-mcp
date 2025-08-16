@@ -1,7 +1,7 @@
 import logging
 from typing import Optional, List
-from applescript_wrapper import AppleScriptWrapper
-from models import Note, Folder, AppleScriptResult
+from .applescript_wrapper import AppleScriptWrapper
+from .models import Note, Folder, AppleScriptResult
 
 logger = logging.getLogger(__name__)
 
