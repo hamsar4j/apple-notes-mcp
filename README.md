@@ -126,7 +126,7 @@ To use this server with an MCP client (like Claude Desktop), add the following t
         "run",
         "--directory",
         "/path/to/apple-notes-mcp",
-        "src/apple_notes_mcp/server.py"
+        "apple-notes-mcp"
       ]
     }
   }

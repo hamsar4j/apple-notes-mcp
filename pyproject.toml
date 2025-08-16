@@ -1,13 +1,16 @@
 [project]
 name = "apple-notes-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "An MCP server for Apple Notes integration"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28.1",
     "mcp[cli]>=1.12.4",
 ]
+
+[project.scripts]
+apple-notes-mcp = "apple_notes_mcp.server:main"
 
 [dependency-groups]
 dev = [
