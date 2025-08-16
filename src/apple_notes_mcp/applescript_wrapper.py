@@ -6,7 +6,9 @@ logger = logging.getLogger(__name__)
 
 
 class AppleScriptWrapper:
-    def __init__(self, timeout: int = 30):
+    """Wrapper for executing AppleScript commands safely."""
+
+    def __init__(self, timeout: int = 30) -> None:
         self.timeout = timeout
 
     def execute(self, script: str) -> AppleScriptResult:
@@ -34,6 +36,7 @@ class AppleScriptWrapper:
             )
 
         except Exception as e:
+            logger.error(f"Unexpected error executing AppleScript: {e}")
             return AppleScriptResult(success=False, error=str(e), return_code=-1)
 
     def execute_notes_script(self, script: str) -> AppleScriptResult:

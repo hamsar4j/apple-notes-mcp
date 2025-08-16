@@ -7,10 +7,13 @@ logger = logging.getLogger(__name__)
 
 
 class NotesClient:
-    def __init__(self, timeout: int = 30):
+    """Client for interacting with Apple Notes through AppleScript commands."""
+
+    def __init__(self, timeout: int = 30) -> None:
         self.wrapper = AppleScriptWrapper(timeout=timeout)
 
     def _parse_list_output(self, output: Optional[str]) -> List[str]:
+        """Parse a comma-separated list output from AppleScript."""
         if not output or not output.strip():
             return []
         return [item.strip() for item in output.split(",") if item.strip()]

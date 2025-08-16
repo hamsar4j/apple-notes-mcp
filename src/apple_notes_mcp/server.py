@@ -1,28 +1,35 @@
 import logging
+from typing import Optional
 from mcp.server.fastmcp import FastMCP
 from .notes_client import NotesClient
-from typing import Optional
 
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initialize the MCP server and Notes client
 mcp = FastMCP("apple-notes")
 notes_client = NotesClient()
 
 
+# =============================================================================
 # Resources (Read-only access)
+# =============================================================================
+
+
 @mcp.resource("note://{note_name}")
 def get_note_content(note_name: str) -> str:
-    """
-    Get the content of a specific note.
+    """Get the content of a specific note.
 
     Args:
         note_name: The name of the note to retrieve
 
     Returns:
         Note content or error message
-    """
 
+    Raises:
+        ValueError: If the note is not found
+    """
     note = notes_client.get_note_content(note_name)
     if not note:
         raise ValueError(f"Note '{note_name}' not found")
@@ -33,16 +40,17 @@ def get_note_content(note_name: str) -> str:
 
 @mcp.resource("folder://{folder_name}")
 def get_folder_info(folder_name: str) -> str:
-    """
-    Get information about a specific folder.
+    """Get information about a specific folder.
 
     Args:
         folder_name: The name of the folder
 
     Returns:
         Folder information or error message
-    """
 
+    Raises:
+        ValueError: If the folder is not found
+    """
     folder_info = notes_client.get_folder_info(folder_name)
     if not folder_info:
         raise ValueError(f"Folder '{folder_name}' not found")
@@ -53,11 +61,14 @@ def get_folder_info(folder_name: str) -> str:
     return f"Folder: {folder_info.name}\nNotes: {note_count}"
 
 
-# Tools (Actions)
+# =============================================================================
+# Tools
+# =============================================================================
+
+
 @mcp.tool()
 def create_note(title: str, content: str, folder: Optional[str] = None) -> str:
-    """
-    Create a new note in Apple Notes.
+    """Create a new note in Apple Notes.
 
     Args:
         title: The title/name of the note
@@ -67,7 +78,6 @@ def create_note(title: str, content: str, folder: Optional[str] = None) -> str:
     Returns:
         Success message or error description
     """
-
     result = notes_client.create_note(title, content, folder)
     if result.success:
         return f"Note '{title}' created successfully"
@@ -77,8 +87,7 @@ def create_note(title: str, content: str, folder: Optional[str] = None) -> str:
 
 @mcp.tool()
 def list_notes(folder: Optional[str] = None) -> str:
-    """
-    List all notes or notes in a specific folder.
+    """List all notes or notes in a specific folder.
 
     Args:
         folder: Optional folder name to filter notes by
@@ -86,7 +95,6 @@ def list_notes(folder: Optional[str] = None) -> str:
     Returns:
         List of note names or error message
     """
-
     notes = notes_client.list_notes(folder)
     if notes:
         notes_list = "\n".join(f"• {note}" for note in notes)
@@ -99,8 +107,7 @@ def list_notes(folder: Optional[str] = None) -> str:
 
 @mcp.tool()
 def update_note_content(note_name: str, new_content: str) -> str:
-    """
-    Update the content of an existing note.
+    """Update the content of an existing note.
 
     Args:
         note_name: The name of the note to update
@@ -109,7 +116,6 @@ def update_note_content(note_name: str, new_content: str) -> str:
     Returns:
         Success message or error description
     """
-
     result = notes_client.update_note_content(note_name, new_content)
     if result.success:
         return f"Note '{note_name}' content updated successfully"
@@ -119,8 +125,7 @@ def update_note_content(note_name: str, new_content: str) -> str:
 
 @mcp.tool()
 def update_note_title(old_name: str, new_name: str) -> str:
-    """
-    Update the title of an existing note.
+    """Update the title of an existing note.
 
     Args:
         old_name: The current name of the note
@@ -129,7 +134,6 @@ def update_note_title(old_name: str, new_name: str) -> str:
     Returns:
         Success message or error description
     """
-
     result = notes_client.update_note_title(old_name, new_name)
     if result.success:
         return f"Note title updated from '{old_name}' to '{new_name}'"
@@ -139,8 +143,7 @@ def update_note_title(old_name: str, new_name: str) -> str:
 
 @mcp.tool()
 def create_folder(folder_name: str) -> str:
-    """
-    Create a new folder in Apple Notes.
+    """Create a new folder in Apple Notes.
 
     Args:
         folder_name: The name of the folder to create
@@ -148,7 +151,6 @@ def create_folder(folder_name: str) -> str:
     Returns:
         Success message or error description
     """
-
     result = notes_client.create_folder(folder_name)
     if result.success:
         return f"Folder '{folder_name}' created successfully"
@@ -158,13 +160,11 @@ def create_folder(folder_name: str) -> str:
 
 @mcp.tool()
 def list_folders() -> str:
-    """
-    List all folders in Apple Notes.
+    """List all folders in Apple Notes.
 
     Returns:
         List of folder names or error message
     """
-
     folders = notes_client.list_folders()
     if folders:
         folders_list = "\n".join(f"• {folder}" for folder in folders)
@@ -175,8 +175,7 @@ def list_folders() -> str:
 
 @mcp.tool()
 def move_note_to_folder(note_name: str, folder_name: str) -> str:
-    """
-    Move a note to a different folder.
+    """Move a note to a different folder.
 
     Args:
         note_name: The name of the note to move
@@ -185,7 +184,6 @@ def move_note_to_folder(note_name: str, folder_name: str) -> str:
     Returns:
         Success message or error description
     """
-
     result = notes_client.move_note_to_folder(note_name, folder_name)
     if result.success:
         return f"Note '{note_name}' moved to folder '{folder_name}'"
@@ -195,8 +193,7 @@ def move_note_to_folder(note_name: str, folder_name: str) -> str:
 
 @mcp.tool()
 def search_notes(search_term: str) -> str:
-    """
-    Search for notes containing a specific term.
+    """Search for notes containing a specific term.
 
     Args:
         search_term: The term to search for in note titles and content
@@ -204,7 +201,6 @@ def search_notes(search_term: str) -> str:
     Returns:
         List of matching note names or error message
     """
-
     matching_notes = notes_client.search_notes(search_term)
     if matching_notes:
         notes_list = "\n".join(f"• {note}" for note in matching_notes)
@@ -213,7 +209,7 @@ def search_notes(search_term: str) -> str:
         return f"No notes found containing '{search_term}'"
 
 
-def main():
+def main() -> None:
     """Entry point for the apple-notes-mcp command."""
     mcp.run(transport="stdio")
 
