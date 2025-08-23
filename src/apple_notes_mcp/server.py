@@ -209,6 +209,23 @@ def search_notes(search_term: str) -> str:
         return f"No notes found containing '{search_term}'"
 
 
+@mcp.tool()
+def delete_note(note_name: str) -> str:
+    """Delete a note from Apple Notes.
+
+    Args:
+        note_name: The name of the note to delete
+
+    Returns:
+        Success message or error description
+    """
+    result = notes_client.delete_note(note_name)
+    if result.success:
+        return f"Note '{note_name}' deleted successfully"
+    else:
+        return f"Failed to delete note: {result.error}"
+
+
 def main() -> None:
     """Entry point for the apple-notes-mcp command."""
     mcp.run(transport="stdio")

@@ -168,3 +168,8 @@ class NotesClient:
         error "Note not found"
         """
         return self.wrapper.execute_notes_script(script)
+
+    def delete_note(self, note_name: str) -> AppleScriptResult:
+        name_esc = self.wrapper.escape_string(note_name)
+        script = f"delete note {name_esc}"
+        return self.wrapper.execute_notes_script(script)

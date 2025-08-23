@@ -2,7 +2,7 @@
 
 ![MCP Apple Notes](./assets/logo.png)
 
-A Model Context Protocol (MCP) server that provides CRU(D) tools for Apple Notes using AppleScript integration. This server allows you to create, read, and update notes and folders in the Apple Notes app on your MacOS devices directly from MCP-compatible AI assistants.
+A Model Context Protocol (MCP) server that provides CRUD tools for Apple Notes using AppleScript integration. This server allows you to create, read, update, and delete notes and folders in the Apple Notes app on your MacOS devices directly from MCP-compatible AI assistants.
 
 ## Table of Contents
 
@@ -28,6 +28,7 @@ A Model Context Protocol (MCP) server that provides CRU(D) tools for Apple Notes
 - **Update note content** - Modify the body of existing notes
 - **Update note title** - Rename existing notes
 - **Search notes** - Find notes by content or title
+- **Delete notes** - Remove notes from Apple Notes
 
 ### Folder Tools
 
@@ -97,6 +98,9 @@ The server will listen for MCP requests via stdio.
 - `search_notes(search_term)` - Search for notes containing a term
   - `search_term`: The term to search for in note titles and content
 
+- `delete_note(note_name)` - Delete a note from Apple Notes
+  - `note_name`: The name of the note to delete
+
 #### Folder Management
 
 - `create_folder(folder_name)` - Create a new folder
@@ -151,6 +155,7 @@ Here are some example prompts you can use with an MCP-compatible AI assistant:
 7. "Create a new folder called 'Personal'"
 8. "Move the note 'Recipe Ideas' to the 'Personal' folder"
 9. "Show me information about the 'Work' folder"
+10. "Delete the note 'Outdated Information'"
 
 ## Troubleshooting
 

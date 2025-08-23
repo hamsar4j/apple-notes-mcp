@@ -11,6 +11,7 @@ from src.apple_notes_mcp.server import (
     list_folders,
     move_note_to_folder,
     search_notes,
+    delete_note,
 )
 from src.apple_notes_mcp.models import Note, Folder, AppleScriptResult
 
@@ -351,3 +352,30 @@ def test_search_notes_no_matches(mock_notes_client):
     # Verify
     assert result == "No notes found containing 'nonexistent'"
     mock_notes_client.search_notes.assert_called_once_with("nonexistent")
+
+
+def test_delete_note_success(mock_notes_client):
+    """Test successful note deletion."""
+    # Setup mock
+    mock_result = AppleScriptResult(success=True)
+    mock_notes_client.delete_note.return_value = mock_result
+
+    # Execute
+    result = delete_note("Test Note")
+
+    # Verify
+    assert result == "Note 'Test Note' deleted successfully"
+    mock_notes_client.delete_note.assert_called_once_with("Test Note")
+
+
+def test_delete_note_failure(mock_notes_client):
+    """Test failed note deletion."""
+    # Setup mock
+    mock_result = AppleScriptResult(success=False, error="Note not found")
+    mock_notes_client.delete_note.return_value = mock_result
+
+    # Execute
+    result = delete_note("Non-existent Note")
+
+    # Verify
+    assert result == "Failed to delete note: Note not found"
