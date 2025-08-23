@@ -12,6 +12,7 @@ from src.apple_notes_mcp.server import (
     move_note_to_folder,
     search_notes,
     delete_note,
+    delete_folder,
 )
 from src.apple_notes_mcp.models import Note, Folder, AppleScriptResult
 
@@ -379,3 +380,30 @@ def test_delete_note_failure(mock_notes_client):
 
     # Verify
     assert result == "Failed to delete note: Note not found"
+
+
+def test_delete_folder_success(mock_notes_client):
+    """Test successful folder deletion."""
+    # Setup mock
+    mock_result = AppleScriptResult(success=True)
+    mock_notes_client.delete_folder.return_value = mock_result
+
+    # Execute
+    result = delete_folder("Test Folder")
+
+    # Verify
+    assert result == "Folder 'Test Folder' deleted successfully"
+    mock_notes_client.delete_folder.assert_called_once_with("Test Folder")
+
+
+def test_delete_folder_failure(mock_notes_client):
+    """Test failed folder deletion."""
+    # Setup mock
+    mock_result = AppleScriptResult(success=False, error="Folder not found")
+    mock_notes_client.delete_folder.return_value = mock_result
+
+    # Execute
+    result = delete_folder("Non-existent Folder")
+
+    # Verify
+    assert result == "Failed to delete folder: Folder not found"

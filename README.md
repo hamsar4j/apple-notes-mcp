@@ -36,6 +36,7 @@ A Model Context Protocol (MCP) server that provides CRUD tools for Apple Notes u
 - **List folders** - Get all available folders
 - **Get folder info** - Get folder details including note count
 - **Move notes** - Move notes between folders
+- **Delete folders** - Remove folders from Apple Notes
 
 ## Prerequisites
 
@@ -115,6 +116,9 @@ The server will listen for MCP requests via stdio.
   - `note_name`: The name of the note to move
   - `folder_name`: The name of the target folder
 
+- `delete_folder(folder_name)` - Delete a folder from Apple Notes
+  - `folder_name`: The name of the folder to delete
+
 ## Configuration
 
 ### MCP Client Configuration
@@ -156,6 +160,7 @@ Here are some example prompts you can use with an MCP-compatible AI assistant:
 8. "Move the note 'Recipe Ideas' to the 'Personal' folder"
 9. "Show me information about the 'Work' folder"
 10. "Delete the note 'Outdated Information'"
+11. "Delete the folder 'Old Project'"
 
 ## Troubleshooting
 

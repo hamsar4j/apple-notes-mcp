@@ -142,6 +142,41 @@ def update_note_title(old_name: str, new_name: str) -> str:
 
 
 @mcp.tool()
+def delete_note(note_name: str) -> str:
+    """Delete a note from Apple Notes.
+
+    Args:
+        note_name: The name of the note to delete
+
+    Returns:
+        Success message or error description
+    """
+    result = notes_client.delete_note(note_name)
+    if result.success:
+        return f"Note '{note_name}' deleted successfully"
+    else:
+        return f"Failed to delete note: {result.error}"
+
+
+@mcp.tool()
+def search_notes(search_term: str) -> str:
+    """Search for notes containing a specific term.
+
+    Args:
+        search_term: The term to search for in note titles and content
+
+    Returns:
+        List of matching note names or error message
+    """
+    matching_notes = notes_client.search_notes(search_term)
+    if matching_notes:
+        notes_list = "\n".join(f"• {note}" for note in matching_notes)
+        return f"Notes containing '{search_term}':\n{notes_list}"
+    else:
+        return f"No notes found containing '{search_term}'"
+
+
+@mcp.tool()
 def create_folder(folder_name: str) -> str:
     """Create a new folder in Apple Notes.
 
@@ -192,38 +227,20 @@ def move_note_to_folder(note_name: str, folder_name: str) -> str:
 
 
 @mcp.tool()
-def search_notes(search_term: str) -> str:
-    """Search for notes containing a specific term.
+def delete_folder(folder_name: str) -> str:
+    """Delete a folder from Apple Notes.
 
     Args:
-        search_term: The term to search for in note titles and content
-
-    Returns:
-        List of matching note names or error message
-    """
-    matching_notes = notes_client.search_notes(search_term)
-    if matching_notes:
-        notes_list = "\n".join(f"• {note}" for note in matching_notes)
-        return f"Notes containing '{search_term}':\n{notes_list}"
-    else:
-        return f"No notes found containing '{search_term}'"
-
-
-@mcp.tool()
-def delete_note(note_name: str) -> str:
-    """Delete a note from Apple Notes.
-
-    Args:
-        note_name: The name of the note to delete
+        folder_name: The name of the folder to delete
 
     Returns:
         Success message or error description
     """
-    result = notes_client.delete_note(note_name)
+    result = notes_client.delete_folder(folder_name)
     if result.success:
-        return f"Note '{note_name}' deleted successfully"
+        return f"Folder '{folder_name}' deleted successfully"
     else:
-        return f"Failed to delete note: {result.error}"
+        return f"Failed to delete folder: {result.error}"
 
 
 def main() -> None:

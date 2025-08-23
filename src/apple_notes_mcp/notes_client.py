@@ -104,6 +104,11 @@ class NotesClient:
 
         return self.wrapper.execute_notes_script(script)
 
+    def delete_note(self, note_name: str) -> AppleScriptResult:
+        name_esc = self.wrapper.escape_string(note_name)
+        script = f"delete note {name_esc}"
+        return self.wrapper.execute_notes_script(script)
+
     def search_notes(self, search_term: str) -> List[str]:
         term_esc = self.wrapper.escape_string(search_term.lower())
         script = f"""
@@ -169,7 +174,7 @@ class NotesClient:
         """
         return self.wrapper.execute_notes_script(script)
 
-    def delete_note(self, note_name: str) -> AppleScriptResult:
-        name_esc = self.wrapper.escape_string(note_name)
-        script = f"delete note {name_esc}"
+    def delete_folder(self, folder_name: str) -> AppleScriptResult:
+        name_esc = self.wrapper.escape_string(folder_name)
+        script = f"delete folder {name_esc}"
         return self.wrapper.execute_notes_script(script)
