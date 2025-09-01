@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Optional, Dict, Any
 from mcp.server.fastmcp import FastMCP
 from .notes_client import NotesClient
 
@@ -17,15 +17,15 @@ notes_client = NotesClient()
 # =============================================================================
 
 
-@mcp.resource("note://{note_name}")
-def get_note_content(note_name: str) -> str:
+@mcp.resource("notes:///note/{note_name}")
+def get_note_content(note_name: str) -> Dict[str, Any]:
     """Get the content of a specific note.
 
     Args:
         note_name: The name of the note to retrieve
 
     Returns:
-        Note content or error message
+        Note content as structured data
 
     Raises:
         ValueError: If the note is not found
@@ -34,19 +34,24 @@ def get_note_content(note_name: str) -> str:
     if not note:
         raise ValueError(f"Note '{note_name}' not found")
 
-    folder_info = f" (in folder: {note.folder})" if note.folder else ""
-    return f"Note: {note.name}{folder_info}\n\n{note.body}"
+    return {
+        "name": note.name,
+        "body": note.body,
+        "folder": note.folder,
+        "creation_date": note.creation_date,
+        "modification_date": note.modification_date,
+    }
 
 
-@mcp.resource("folder://{folder_name}")
-def get_folder_info(folder_name: str) -> str:
+@mcp.resource("notes:///folder/{folder_name}")
+def get_folder_info(folder_name: str) -> Dict[str, Any]:
     """Get information about a specific folder.
 
     Args:
         folder_name: The name of the folder
 
     Returns:
-        Folder information or error message
+        Folder information as structured data
 
     Raises:
         ValueError: If the folder is not found
@@ -55,10 +60,7 @@ def get_folder_info(folder_name: str) -> str:
     if not folder_info:
         raise ValueError(f"Folder '{folder_name}' not found")
 
-    note_count = (
-        folder_info.note_count if folder_info.note_count is not None else "unknown"
-    )
-    return f"Folder: {folder_info.name}\nNotes: {note_count}"
+    return {"name": folder_info.name, "note_count": folder_info.note_count}
 
 
 # =============================================================================
@@ -67,7 +69,9 @@ def get_folder_info(folder_name: str) -> str:
 
 
 @mcp.tool()
-def create_note(title: str, content: str, folder: Optional[str] = None) -> str:
+def create_note(
+    title: str, content: str, folder: Optional[str] = None
+) -> Dict[str, Any]:
     """Create a new note in Apple Notes.
 
     Args:
@@ -76,37 +80,43 @@ def create_note(title: str, content: str, folder: Optional[str] = None) -> str:
         folder: Optional folder name to create the note in
 
     Returns:
-        Success message or error description
+        Result with success status and message
     """
     result = notes_client.create_note(title, content, folder)
-    if result.success:
-        return f"Note '{title}' created successfully"
-    else:
-        return f"Failed to create note: {result.error}"
+    return {
+        "success": result.success,
+        "message": (
+            f"Note '{title}' created successfully"
+            if result.success
+            else f"Failed to create note: {result.error}"
+        ),
+    }
 
 
 @mcp.tool()
-def list_notes(folder: Optional[str] = None) -> str:
+def list_notes(folder: Optional[str] = None) -> Dict[str, Any]:
     """List all notes or notes in a specific folder.
 
     Args:
         folder: Optional folder name to filter notes by
 
     Returns:
-        List of note names or error message
+        List of note names
     """
     notes = notes_client.list_notes(folder)
-    if notes:
-        notes_list = "\n".join(f"• {note}" for note in notes)
-        folder_text = f" in folder '{folder}'" if folder else ""
-        return f"Notes{folder_text}:\n{notes_list}"
-    else:
-        folder_text = f" in folder '{folder}'" if folder else ""
-        return f"No notes found{folder_text}"
+    folder_text = f" in folder '{folder}'" if folder else ""
+    return {
+        "notes": notes,
+        "message": (
+            f"Found {len(notes)} notes{folder_text}"
+            if notes
+            else f"No notes found{folder_text}"
+        ),
+    }
 
 
 @mcp.tool()
-def update_note_content(note_name: str, new_content: str) -> str:
+def update_note_content(note_name: str, new_content: str) -> Dict[str, Any]:
     """Update the content of an existing note.
 
     Args:
@@ -114,17 +124,21 @@ def update_note_content(note_name: str, new_content: str) -> str:
         new_content: The new content for the note
 
     Returns:
-        Success message or error description
+        Result with success status and message
     """
     result = notes_client.update_note_content(note_name, new_content)
-    if result.success:
-        return f"Note '{note_name}' content updated successfully"
-    else:
-        return f"Failed to update note: {result.error}"
+    return {
+        "success": result.success,
+        "message": (
+            f"Note '{note_name}' content updated successfully"
+            if result.success
+            else f"Failed to update note: {result.error}"
+        ),
+    }
 
 
 @mcp.tool()
-def update_note_title(old_name: str, new_name: str) -> str:
+def update_note_title(old_name: str, new_name: str) -> Dict[str, Any]:
     """Update the title of an existing note.
 
     Args:
@@ -132,84 +146,98 @@ def update_note_title(old_name: str, new_name: str) -> str:
         new_name: The new name for the note
 
     Returns:
-        Success message or error description
+        Result with success status and message
     """
     result = notes_client.update_note_title(old_name, new_name)
-    if result.success:
-        return f"Note title updated from '{old_name}' to '{new_name}'"
-    else:
-        return f"Failed to update note title: {result.error}"
+    return {
+        "success": result.success,
+        "message": (
+            f"Note title updated from '{old_name}' to '{new_name}'"
+            if result.success
+            else f"Failed to update note title: {result.error}"
+        ),
+    }
 
 
 @mcp.tool()
-def delete_note(note_name: str) -> str:
+def delete_note(note_name: str) -> Dict[str, Any]:
     """Delete a note from Apple Notes.
 
     Args:
         note_name: The name of the note to delete
 
     Returns:
-        Success message or error description
+        Result with success status and message
     """
     result = notes_client.delete_note(note_name)
-    if result.success:
-        return f"Note '{note_name}' deleted successfully"
-    else:
-        return f"Failed to delete note: {result.error}"
+    return {
+        "success": result.success,
+        "message": (
+            f"Note '{note_name}' deleted successfully"
+            if result.success
+            else f"Failed to delete note: {result.error}"
+        ),
+    }
 
 
 @mcp.tool()
-def search_notes(search_term: str) -> str:
+def search_notes(search_term: str) -> Dict[str, Any]:
     """Search for notes containing a specific term.
 
     Args:
         search_term: The term to search for in note titles and content
 
     Returns:
-        List of matching note names or error message
+        List of matching note names
     """
     matching_notes = notes_client.search_notes(search_term)
-    if matching_notes:
-        notes_list = "\n".join(f"• {note}" for note in matching_notes)
-        return f"Notes containing '{search_term}':\n{notes_list}"
-    else:
-        return f"No notes found containing '{search_term}'"
+    return {
+        "notes": matching_notes,
+        "message": (
+            f"Found {len(matching_notes)} notes containing '{search_term}'"
+            if matching_notes
+            else f"No notes found containing '{search_term}'"
+        ),
+    }
 
 
 @mcp.tool()
-def create_folder(folder_name: str) -> str:
+def create_folder(folder_name: str) -> Dict[str, Any]:
     """Create a new folder in Apple Notes.
 
     Args:
         folder_name: The name of the folder to create
 
     Returns:
-        Success message or error description
+        Result with success status and message
     """
     result = notes_client.create_folder(folder_name)
-    if result.success:
-        return f"Folder '{folder_name}' created successfully"
-    else:
-        return f"Failed to create folder: {result.error}"
+    return {
+        "success": result.success,
+        "message": (
+            f"Folder '{folder_name}' created successfully"
+            if result.success
+            else f"Failed to create folder: {result.error}"
+        ),
+    }
 
 
 @mcp.tool()
-def list_folders() -> str:
+def list_folders() -> Dict[str, Any]:
     """List all folders in Apple Notes.
 
     Returns:
-        List of folder names or error message
+        List of folder names
     """
     folders = notes_client.list_folders()
-    if folders:
-        folders_list = "\n".join(f"• {folder}" for folder in folders)
-        return f"Folders in Apple Notes:\n{folders_list}"
-    else:
-        return "No folders found"
+    return {
+        "folders": folders,
+        "message": f"Found {len(folders)} folders" if folders else "No folders found",
+    }
 
 
 @mcp.tool()
-def move_note_to_folder(note_name: str, folder_name: str) -> str:
+def move_note_to_folder(note_name: str, folder_name: str) -> Dict[str, Any]:
     """Move a note to a different folder.
 
     Args:
@@ -217,30 +245,38 @@ def move_note_to_folder(note_name: str, folder_name: str) -> str:
         folder_name: The name of the target folder
 
     Returns:
-        Success message or error description
+        Result with success status and message
     """
     result = notes_client.move_note_to_folder(note_name, folder_name)
-    if result.success:
-        return f"Note '{note_name}' moved to folder '{folder_name}'"
-    else:
-        return f"Failed to move note: {result.error}"
+    return {
+        "success": result.success,
+        "message": (
+            f"Note '{note_name}' moved to folder '{folder_name}'"
+            if result.success
+            else f"Failed to move note: {result.error}"
+        ),
+    }
 
 
 @mcp.tool()
-def delete_folder(folder_name: str) -> str:
+def delete_folder(folder_name: str) -> Dict[str, Any]:
     """Delete a folder from Apple Notes.
 
     Args:
         folder_name: The name of the folder to delete
 
     Returns:
-        Success message or error description
+        Result with success status and message
     """
     result = notes_client.delete_folder(folder_name)
-    if result.success:
-        return f"Folder '{folder_name}' deleted successfully"
-    else:
-        return f"Failed to delete folder: {result.error}"
+    return {
+        "success": result.success,
+        "message": (
+            f"Folder '{folder_name}' deleted successfully"
+            if result.success
+            else f"Failed to delete folder: {result.error}"
+        ),
+    }
 
 
 def main() -> None:

@@ -85,9 +85,6 @@ The server will listen for MCP requests via stdio.
 - `list_notes(folder=None)` - List all notes or notes in a folder
   - `folder`: Optional folder name to filter notes by
 
-- `get_note_content(note_name)` - Get the content of a specific note
-  - `note_name`: The name of the note to retrieve
-
 - `update_note_content(note_name, new_content)` - Update note content
   - `note_name`: The name of the note to update
   - `new_content`: The new content for the note
@@ -109,15 +106,24 @@ The server will listen for MCP requests via stdio.
 
 - `list_folders()` - List all folders
 
-- `get_folder_info(folder_name)` - Get folder information
-  - `folder_name`: The name of the folder
-
 - `move_note_to_folder(note_name, folder_name)` - Move a note to a folder
   - `note_name`: The name of the note to move
   - `folder_name`: The name of the target folder
 
 - `delete_folder(folder_name)` - Delete a folder from Apple Notes
   - `folder_name`: The name of the folder to delete
+
+### Available Resources
+
+#### Note Content
+
+- `notes:///note/{note_name}` - Get the content of a specific note
+  - Returns structured data with note content, folder, and metadata
+
+#### Folder Information
+
+- `notes:///folder/{folder_name}` - Get folder information
+  - Returns structured data with folder name and note count
 
 ## Configuration
 
@@ -161,6 +167,8 @@ Here are some example prompts you can use with an MCP-compatible AI assistant:
 9. "Show me information about the 'Work' folder"
 10. "Delete the note 'Outdated Information'"
 11. "Delete the folder 'Old Project'"
+
+The tools return structured data that can be easily processed by the AI assistant, and the resources provide direct access to note and folder information.
 
 ## Troubleshooting
 
