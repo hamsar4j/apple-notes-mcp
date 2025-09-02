@@ -17,3 +17,6 @@ wheels/
 .coverage
 .pytest_cache/
 htmlcov/
+
+TODO.md
+IMPROVEMENTS.md

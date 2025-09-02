@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import patch
+from mcp.types import TextContent
 from src.apple_notes_mcp.server import (
     read_note,
     get_folder_info,
@@ -34,9 +35,11 @@ def test_read_note_success(mock_notes_client):
     result = read_note("Test Note")
 
     # Verify
-    assert result["name"] == "Test Note"
-    assert result["body"] == "This is a test note"
-    assert result["folder"] == "Test Folder"
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Test Note" in result.text
+    assert "This is a test note" in result.text
+    assert "Test Folder" in result.text
     mock_notes_client.get_note_content.assert_called_once_with("Test Note")
 
 
@@ -50,9 +53,11 @@ def test_read_note_no_folder(mock_notes_client):
     result = read_note("Test Note")
 
     # Verify
-    assert result["name"] == "Test Note"
-    assert result["body"] == "This is a test note"
-    assert result["folder"] is None
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Test Note" in result.text
+    assert "This is a test note" in result.text
+    mock_notes_client.get_note_content.assert_called_once_with("Test Note")
 
 
 def test_read_note_not_found(mock_notes_client):
@@ -114,8 +119,9 @@ def test_create_note_success(mock_notes_client):
     result = create_note("New Note", "Note content", folder_name="Test Folder")
 
     # Verify
-    assert result["success"] == True
-    assert "created successfully" in result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "created successfully" in result.text
     mock_notes_client.create_note.assert_called_once_with(
         "New Note", "Note content", "Test Folder"
     )
@@ -131,8 +137,9 @@ def test_create_note_without_folder(mock_notes_client):
     result = create_note("New Note", "Note content")
 
     # Verify
-    assert result["success"] == True
-    assert "created successfully" in result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "created successfully" in result.text
     mock_notes_client.create_note.assert_called_once_with(
         "New Note", "Note content", None
     )
@@ -148,8 +155,9 @@ def test_create_note_failure(mock_notes_client):
     result = create_note("New Note", "Note content", "Non-existent Folder")
 
     # Verify
-    assert result["success"] == False
-    assert "Failed to create note: Folder not found" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Failed to create note: Folder not found" == result.text
 
 
 def test_list_notes_success(mock_notes_client):
@@ -161,8 +169,12 @@ def test_list_notes_success(mock_notes_client):
     result = list_notes()
 
     # Verify
-    assert result["notes"] == ["Note 1", "Note 2", "Note 3"]
-    assert "Found 3 notes" in result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Found 3 notes" in result.text
+    assert "Note 1" in result.text
+    assert "Note 2" in result.text
+    assert "Note 3" in result.text
     mock_notes_client.list_notes.assert_called_once_with(None)
 
 
@@ -175,8 +187,11 @@ def test_list_notes_in_folder(mock_notes_client):
     result = list_notes(folder_name="Test Folder")
 
     # Verify
-    assert result["notes"] == ["Note 1", "Note 2"]
-    assert "in folder 'Test Folder'" in result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "in folder 'Test Folder'" in result.text
+    assert "Note 1" in result.text
+    assert "Note 2" in result.text
     mock_notes_client.list_notes.assert_called_once_with("Test Folder")
 
 
@@ -189,8 +204,9 @@ def test_list_notes_empty(mock_notes_client):
     result = list_notes()
 
     # Verify
-    assert result["notes"] == []
-    assert result["message"] == "No notes found"
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert result.text == "No notes found"
     mock_notes_client.list_notes.assert_called_once_with(None)
 
 
@@ -204,8 +220,9 @@ def test_update_note_content_success(mock_notes_client):
     result = update_note_content("Test Note", "Updated content")
 
     # Verify
-    assert result["success"] == True
-    assert "content updated successfully" in result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "content updated successfully" in result.text
     mock_notes_client.update_note_content.assert_called_once_with(
         "Test Note", "Updated content"
     )
@@ -221,8 +238,9 @@ def test_update_note_content_failure(mock_notes_client):
     result = update_note_content("Non-existent Note", "Updated content")
 
     # Verify
-    assert result["success"] == False
-    assert "Failed to update note: Note not found" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Failed to update note: Note not found" == result.text
 
 
 def test_update_note_title_success(mock_notes_client):
@@ -235,8 +253,9 @@ def test_update_note_title_success(mock_notes_client):
     result = update_note_title("Old Title", "New Title")
 
     # Verify
-    assert result["success"] == True
-    assert "Note title updated from 'Old Title' to 'New Title'" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Note title updated from 'Old Title' to 'New Title'" == result.text
     mock_notes_client.update_note_title.assert_called_once_with(
         "Old Title", "New Title"
     )
@@ -252,8 +271,9 @@ def test_update_note_title_failure(mock_notes_client):
     result = update_note_title("Non-existent Note", "New Title")
 
     # Verify
-    assert result["success"] == False
-    assert "Failed to update note title: Note not found" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Failed to update note title: Note not found" == result.text
 
 
 def test_create_folder_success(mock_notes_client):
@@ -266,8 +286,9 @@ def test_create_folder_success(mock_notes_client):
     result = create_folder("New Folder")
 
     # Verify
-    assert result["success"] == True
-    assert "Folder 'New Folder' created successfully" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Folder 'New Folder' created successfully" == result.text
     mock_notes_client.create_folder.assert_called_once_with("New Folder")
 
 
@@ -281,8 +302,9 @@ def test_create_folder_failure(mock_notes_client):
     result = create_folder("Existing Folder")
 
     # Verify
-    assert result["success"] == False
-    assert "Failed to create folder: Folder already exists" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Failed to create folder: Folder already exists" == result.text
 
 
 def test_list_folders_success(mock_notes_client):
@@ -294,8 +316,12 @@ def test_list_folders_success(mock_notes_client):
     result = list_folders()
 
     # Verify
-    assert result["folders"] == ["Folder 1", "Folder 2", "Folder 3"]
-    assert "Found 3 folders" in result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Found 3 folders" in result.text
+    assert "Folder 1" in result.text
+    assert "Folder 2" in result.text
+    assert "Folder 3" in result.text
     mock_notes_client.list_folders.assert_called_once()
 
 
@@ -308,8 +334,9 @@ def test_list_folders_empty(mock_notes_client):
     result = list_folders()
 
     # Verify
-    assert result["folders"] == []
-    assert result["message"] == "No folders found"
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert result.text == "No folders found"
     mock_notes_client.list_folders.assert_called_once()
 
 
@@ -323,8 +350,9 @@ def test_move_note_to_folder_success(mock_notes_client):
     result = move_note_to_folder("Test Note", "Test Folder")
 
     # Verify
-    assert result["success"] == True
-    assert "Note 'Test Note' moved to folder 'Test Folder'" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Note 'Test Note' moved to folder 'Test Folder'" == result.text
     mock_notes_client.move_note_to_folder.assert_called_once_with(
         "Test Note", "Test Folder"
     )
@@ -340,8 +368,9 @@ def test_move_note_to_folder_failure(mock_notes_client):
     result = move_note_to_folder("Non-existent Note", "Non-existent Folder")
 
     # Verify
-    assert result["success"] == False
-    assert "Failed to move note: Note or folder not found" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Failed to move note: Note or folder not found" == result.text
 
 
 def test_search_notes_success(mock_notes_client):
@@ -353,8 +382,12 @@ def test_search_notes_success(mock_notes_client):
     result = search_notes("test")
 
     # Verify
-    assert result["notes"] == ["Note 1", "Note 2", "Note 3"]
-    assert "Found 3 notes containing 'test'" in result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Found 3 notes containing 'test'" in result.text
+    assert "Note 1" in result.text
+    assert "Note 2" in result.text
+    assert "Note 3" in result.text
     mock_notes_client.search_notes.assert_called_once_with("test")
 
 
@@ -367,8 +400,9 @@ def test_search_notes_no_matches(mock_notes_client):
     result = search_notes("nonexistent")
 
     # Verify
-    assert result["notes"] == []
-    assert "No notes found containing 'nonexistent'" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "No notes found containing 'nonexistent'" == result.text
     mock_notes_client.search_notes.assert_called_once_with("nonexistent")
 
 
@@ -382,8 +416,9 @@ def test_delete_note_success(mock_notes_client):
     result = delete_note("Test Note")
 
     # Verify
-    assert result["success"] == True
-    assert "Note 'Test Note' deleted successfully" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Note 'Test Note' deleted successfully" == result.text
     mock_notes_client.delete_note.assert_called_once_with("Test Note")
 
 
@@ -397,8 +432,9 @@ def test_delete_note_failure(mock_notes_client):
     result = delete_note("Non-existent Note")
 
     # Verify
-    assert result["success"] == False
-    assert "Failed to delete note: Note not found" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Failed to delete note: Note not found" == result.text
 
 
 def test_delete_folder_success(mock_notes_client):
@@ -411,8 +447,9 @@ def test_delete_folder_success(mock_notes_client):
     result = delete_folder("Test Folder")
 
     # Verify
-    assert result["success"] == True
-    assert "Folder 'Test Folder' deleted successfully" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Folder 'Test Folder' deleted successfully" == result.text
     mock_notes_client.delete_folder.assert_called_once_with("Test Folder")
 
 
@@ -426,5 +463,6 @@ def test_delete_folder_failure(mock_notes_client):
     result = delete_folder("Non-existent Folder")
 
     # Verify
-    assert result["success"] == False
-    assert "Failed to delete folder: Folder not found" == result["message"]
+    assert isinstance(result, TextContent)
+    assert result.type == "text"
+    assert "Failed to delete folder: Folder not found" == result.text
