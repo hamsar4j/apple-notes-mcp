@@ -17,32 +17,6 @@ notes_client = NotesClient()
 # =============================================================================
 
 
-@mcp.resource("notes:///note/{note_name}")
-def get_note_content(note_name: str) -> Dict[str, Any]:
-    """Get the content of a specific note.
-
-    Args:
-        note_name: The name of the note to retrieve
-
-    Returns:
-        Note content as structured data
-
-    Raises:
-        ValueError: If the note is not found
-    """
-    note = notes_client.get_note_content(note_name)
-    if not note:
-        raise ValueError(f"Note '{note_name}' not found")
-
-    return {
-        "name": note.name,
-        "body": note.body,
-        "folder": note.folder,
-        "creation_date": note.creation_date,
-        "modification_date": note.modification_date,
-    }
-
-
 @mcp.resource("notes:///folder/{folder_name}")
 def get_folder_info(folder_name: str) -> Dict[str, Any]:
     """Get information about a specific folder.
@@ -112,6 +86,32 @@ def list_notes(folder: Optional[str] = None) -> Dict[str, Any]:
             if notes
             else f"No notes found{folder_text}"
         ),
+    }
+
+
+@mcp.tool()
+def read_note(note_name: str) -> Dict[str, Any]:
+    """Read the content of a specific note.
+
+    Args:
+        note_name: The name of the note to read
+
+    Returns:
+        Note content as structured data
+
+    Raises:
+        ValueError: If the note is not found
+    """
+    note = notes_client.get_note_content(note_name)
+    if not note:
+        raise ValueError(f"Note '{note_name}' not found")
+
+    return {
+        "name": note.name,
+        "body": note.body,
+        "folder": note.folder,
+        "creation_date": note.creation_date,
+        "modification_date": note.modification_date,
     }
 
 

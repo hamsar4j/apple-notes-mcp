@@ -24,7 +24,7 @@ A Model Context Protocol (MCP) server that provides CRUD tools for Apple Notes u
 
 - **Create notes** - Add new notes with title and content
 - **List notes** - Get all notes or notes in a specific folder
-- **Get note content** - Retrieve the full content of a specific note
+- **Read note** - Retrieve the full content of a specific note
 - **Update note content** - Modify the body of existing notes
 - **Update note title** - Rename existing notes
 - **Search notes** - Find notes by content or title
@@ -85,9 +85,8 @@ The server will listen for MCP requests via stdio.
 - `list_notes(folder=None)` - List all notes or notes in a folder
   - `folder`: Optional folder name to filter notes by
 
-- `update_note_content(note_name, new_content)` - Update note content
-  - `note_name`: The name of the note to update
-  - `new_content`: The new content for the note
+- `read_note(note_name)` - Read the content of a specific note
+  - `note_name`: The name of the note to read
 
 - `update_note_title(old_name, new_name)` - Rename a note
   - `old_name`: The current name of the note
@@ -114,11 +113,6 @@ The server will listen for MCP requests via stdio.
   - `folder_name`: The name of the folder to delete
 
 ### Available Resources
-
-#### Note Content
-
-- `notes:///note/{note_name}` - Get the content of a specific note
-  - Returns structured data with note content, folder, and metadata
 
 #### Folder Information
 
@@ -158,7 +152,7 @@ Here are some example prompts you can use with an MCP-compatible AI assistant:
 
 1. "Create a new note titled 'Meeting Notes' with content 'Discussed project timeline and deliverables'"
 2. "List all my notes in the 'Work' folder"
-3. "Get the content of my note 'Shopping List'"
+3. "Read the content of my note 'Shopping List'"
 4. "Update the note 'Project Ideas' with new content about our app concept"
 5. "Rename the note 'Old Title' to 'New Title'"
 6. "Search for notes containing 'important'"

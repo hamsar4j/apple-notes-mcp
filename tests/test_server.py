@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 from src.apple_notes_mcp.server import (
-    get_note_content,
+    read_note,
     get_folder_info,
     create_note,
     list_notes,
@@ -24,14 +24,14 @@ def mock_notes_client():
         yield mock
 
 
-def test_get_note_content_success(mock_notes_client):
+def test_read_note_success(mock_notes_client):
     """Test successful retrieval of note content."""
     # Setup mock
     mock_note = Note(name="Test Note", body="This is a test note", folder="Test Folder")
     mock_notes_client.get_note_content.return_value = mock_note
 
     # Execute
-    result = get_note_content("Test Note")
+    result = read_note("Test Note")
 
     # Verify
     assert result["name"] == "Test Note"
@@ -40,14 +40,14 @@ def test_get_note_content_success(mock_notes_client):
     mock_notes_client.get_note_content.assert_called_once_with("Test Note")
 
 
-def test_get_note_content_no_folder(mock_notes_client):
+def test_read_note_no_folder(mock_notes_client):
     """Test retrieving note content when note is not in a folder."""
     # Setup mock
     mock_note = Note(name="Test Note", body="This is a test note", folder=None)
     mock_notes_client.get_note_content.return_value = mock_note
 
     # Execute
-    result = get_note_content("Test Note")
+    result = read_note("Test Note")
 
     # Verify
     assert result["name"] == "Test Note"
@@ -55,14 +55,14 @@ def test_get_note_content_no_folder(mock_notes_client):
     assert result["folder"] is None
 
 
-def test_get_note_content_not_found(mock_notes_client):
+def test_read_note_not_found(mock_notes_client):
     """Test retrieving content of non-existent note."""
     # Setup mock
     mock_notes_client.get_note_content.return_value = None
 
     # Execute and verify
     with pytest.raises(ValueError, match="Note 'Non-existent Note' not found"):
-        get_note_content("Non-existent Note")
+        read_note("Non-existent Note")
 
 
 def test_get_folder_info_success(mock_notes_client):
