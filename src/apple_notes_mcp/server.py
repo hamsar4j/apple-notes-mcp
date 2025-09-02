@@ -44,19 +44,19 @@ def get_folder_info(folder_name: str) -> Dict[str, Any]:
 
 @mcp.tool()
 def create_note(
-    title: str, content: str, folder: Optional[str] = None
+    title: str, content: str, folder_name: Optional[str] = None
 ) -> Dict[str, Any]:
     """Create a new note in Apple Notes.
 
     Args:
         title: The title/name of the note
         content: The content/body of the note
-        folder: Optional folder name to create the note in
+        folder_name: Optional folder name to create the note in
 
     Returns:
         Result with success status and message
     """
-    result = notes_client.create_note(title, content, folder)
+    result = notes_client.create_note(title, content, folder_name)
     return {
         "success": result.success,
         "message": (
@@ -68,17 +68,17 @@ def create_note(
 
 
 @mcp.tool()
-def list_notes(folder: Optional[str] = None) -> Dict[str, Any]:
+def list_notes(folder_name: Optional[str] = None) -> Dict[str, Any]:
     """List all notes or notes in a specific folder.
 
     Args:
-        folder: Optional folder name to filter notes by
+        folder_name: Optional folder name to filter notes by
 
     Returns:
         List of note names
     """
-    notes = notes_client.list_notes(folder)
-    folder_text = f" in folder '{folder}'" if folder else ""
+    notes = notes_client.list_notes(folder_name)
+    folder_text = f" in folder '{folder_name}'" if folder_name else ""
     return {
         "notes": notes,
         "message": (

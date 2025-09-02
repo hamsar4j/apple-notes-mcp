@@ -111,7 +111,7 @@ def test_create_note_success(mock_notes_client):
     mock_notes_client.create_note.return_value = mock_result
 
     # Execute
-    result = create_note("New Note", "Note content", "Test Folder")
+    result = create_note("New Note", "Note content", folder_name="Test Folder")
 
     # Verify
     assert result["success"] == True
@@ -172,7 +172,7 @@ def test_list_notes_in_folder(mock_notes_client):
     mock_notes_client.list_notes.return_value = ["Note 1", "Note 2"]
 
     # Execute
-    result = list_notes("Test Folder")
+    result = list_notes(folder_name="Test Folder")
 
     # Verify
     assert result["notes"] == ["Note 1", "Note 2"]
